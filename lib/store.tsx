@@ -15,7 +15,7 @@ import {
   type Direction,
   type Position,
 } from "./mock";
-import { ROBX_TOKEN_ADDRESS } from "./config";
+import { ROBX_TOKEN_ADDRESS, ROBINHOOD_CHAIN } from "./config";
 
 // Real EIP-1193 wallet connection — works with MetaMask, Rabby, and any
 // injected EVM wallet. Balances are read from the chain; until the ROBX
@@ -23,8 +23,8 @@ import { ROBX_TOKEN_ADDRESS } from "./config";
 
 type Eip1193 = {
   request(args: { method: string; params?: unknown[] }): Promise<unknown>;
-  on?(event: string, cb: (accounts: string[]) => void): void;
-  removeListener?(event: string, cb: (accounts: string[]) => void): void;
+  on?(event: string, cb: (payload: unknown) => void): void;
+  removeListener?(event: string, cb: (payload: unknown) => void): void;
 };
 
 declare global {
@@ -36,10 +36,12 @@ declare global {
 type WalletState = {
   connected: boolean;
   address: string;
+  chainId: number; // 0 until known
 };
 
 type Store = {
   wallet: WalletState;
+  wrongNetwork: boolean; // connected but not on Robinhood Chain
   robxBalance: number;
   claimUsdc: number;
   walletUsdc: number;
@@ -48,6 +50,7 @@ type Store = {
   history: ClosedPosition[];
   // actions
   connect: () => void;
+  switchNetwork: () => Promise<void>;
   disconnect: () => void;
   buyToken: (usdc: number) => void;
   sellToken: (robx: number) => void;
@@ -85,10 +88,40 @@ async function fetchRobxBalance(
   }
 }
 
+// Ask the wallet to switch to Robinhood Chain, adding it first if unknown.
+async function ensureNetwork(eth: Eip1193): Promise<void> {
+  try {
+    await eth.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: ROBINHOOD_CHAIN.chainIdHex }],
+    });
+  } catch (err) {
+    // 4902 = chain not added to the wallet yet → add it, which also switches
+    const code = (err as { code?: number })?.code;
+    if (code === 4902 || code === -32603) {
+      await eth.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: ROBINHOOD_CHAIN.chainIdHex,
+            chainName: ROBINHOOD_CHAIN.chainName,
+            rpcUrls: ROBINHOOD_CHAIN.rpcUrls,
+            blockExplorerUrls: ROBINHOOD_CHAIN.blockExplorerUrls,
+            nativeCurrency: ROBINHOOD_CHAIN.nativeCurrency,
+          },
+        ],
+      });
+    } else {
+      throw err;
+    }
+  }
+}
+
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [wallet, setWallet] = useState<WalletState>({
     connected: false,
     address: "",
+    chainId: 0,
   });
   const [robxBalance, setRobx] = useState(0);
   const [claimUsdc, setClaim] = useState(0);
@@ -96,6 +129,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [shareBps] = useState(0);
   const [positions, setPositions] = useState<Position[]>([]);
   const [history, setHistory] = useState<ClosedPosition[]>([]);
+
+  const readChainId = useCallback(async (eth: Eip1193): Promise<number> => {
+    try {
+      const hex = (await eth.request({ method: "eth_chainId" })) as string;
+      return parseInt(hex, 16);
+    } catch {
+      return 0;
+    }
+  }, []);
 
   const connect = useCallback(async () => {
     const eth = window.ethereum;
@@ -111,34 +153,70 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       })) as string[];
       const address = accounts?.[0];
       if (!address) return;
-      setWallet({ connected: true, address });
+
+      // put the wallet on Robinhood Chain before reading anything
+      let chainId = await readChainId(eth);
+      if (chainId !== ROBINHOOD_CHAIN.chainId) {
+        try {
+          await ensureNetwork(eth);
+          chainId = await readChainId(eth);
+        } catch {
+          /* user declined the switch — connect anyway, show Wrong network */
+        }
+      }
+
+      setWallet({ connected: true, address, chainId });
       setRobx(await fetchRobxBalance(eth, address));
     } catch {
       /* user rejected the request */
     }
-  }, []);
+  }, [readChainId]);
+
+  const switchNetwork = useCallback(async () => {
+    const eth = window.ethereum;
+    if (!eth) return;
+    try {
+      await ensureNetwork(eth);
+      const chainId = await readChainId(eth);
+      setWallet((w) => ({ ...w, chainId }));
+    } catch {
+      /* user declined */
+    }
+  }, [readChainId]);
 
   const disconnect = useCallback(() => {
-    setWallet({ connected: false, address: "" });
+    setWallet({ connected: false, address: "", chainId: 0 });
     setRobx(0);
   }, []);
 
-  // follow account switches in MetaMask / Rabby
+  // follow account & network switches in MetaMask / Rabby
   useEffect(() => {
     const eth = window.ethereum;
     if (!eth?.on) return;
-    const onAccounts = async (accounts: string[]) => {
-      const address = accounts?.[0];
+    const onAccounts = async (payload: unknown) => {
+      const address = (payload as string[])?.[0];
       if (!address) {
         disconnect();
         return;
       }
-      setWallet({ connected: true, address });
+      const chainId = await readChainId(eth);
+      setWallet((w) => ({ ...w, connected: true, address, chainId }));
       setRobx(await fetchRobxBalance(eth, address));
     };
+    const onChain = (payload: unknown) => {
+      const chainId = parseInt(payload as string, 16);
+      setWallet((w) => ({ ...w, chainId }));
+    };
     eth.on("accountsChanged", onAccounts);
-    return () => eth.removeListener?.("accountsChanged", onAccounts);
-  }, [disconnect]);
+    eth.on("chainChanged", onChain);
+    return () => {
+      eth.removeListener?.("accountsChanged", onAccounts);
+      eth.removeListener?.("chainChanged", onChain);
+    };
+  }, [disconnect, readChainId]);
+
+  const wrongNetwork =
+    wallet.connected && wallet.chainId !== ROBINHOOD_CHAIN.chainId;
 
   // Trade is gated behind FEATURES.tradeLive — these stay inert until launch.
   const buyToken = useCallback((usdc: number) => {
@@ -217,6 +295,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<Store>(
     () => ({
       wallet,
+      wrongNetwork,
       robxBalance,
       claimUsdc,
       walletUsdc,
@@ -224,6 +303,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       positions,
       history,
       connect,
+      switchNetwork,
       disconnect,
       buyToken,
       sellToken,
@@ -232,6 +312,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       wallet,
+      wrongNetwork,
       robxBalance,
       claimUsdc,
       walletUsdc,
@@ -239,6 +320,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       positions,
       history,
       connect,
+      switchNetwork,
       disconnect,
       buyToken,
       sellToken,

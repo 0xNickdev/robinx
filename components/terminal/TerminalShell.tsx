@@ -33,7 +33,7 @@ const NAV: { view: View; label: string; soon?: boolean; Icon: (p: IconProps) => 
 
 export function TerminalShell() {
   const [view, setView] = useState<View>("dashboard");
-  const { wallet, connect, disconnect } = useStore();
+  const { wallet, wrongNetwork, connect, switchNetwork, disconnect } = useStore();
 
   return (
     <div className="min-h-[100svh] lg:flex">
@@ -94,10 +94,23 @@ export function TerminalShell() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="hidden items-center gap-2 rounded-lg border border-robin/10 bg-ink-900/60 px-3 py-2 text-xs text-zinc-400 sm:flex">
-              <span className="h-2 w-2 rounded-full bg-long" />
-              {NETWORK.name}
-            </span>
+            {wrongNetwork ? (
+              <button
+                onClick={switchNetwork}
+                className="flex items-center gap-2 rounded-lg border-2 border-short/60 bg-short/10 px-3 py-2 text-xs font-bold text-short transition-colors hover:bg-short/20"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-short opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-short" />
+                </span>
+                Wrong network · Switch
+              </button>
+            ) : (
+              <span className="hidden items-center gap-2 rounded-lg border border-robin/10 bg-ink-900/60 px-3 py-2 text-xs text-zinc-400 sm:flex">
+                <span className="h-2 w-2 rounded-full bg-long" />
+                {NETWORK.name}
+              </span>
+            )}
             <WalletButton
               connected={wallet.connected}
               address={wallet.address}

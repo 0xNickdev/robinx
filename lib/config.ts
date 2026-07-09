@@ -6,7 +6,17 @@
 // ⟵ PASTE THE TOKEN ADDRESS HERE when deployed (enables wallet balance reads)
 export const ROBX_TOKEN_ADDRESS = "";
 
-// Where "Buy ROBX" sends people (PancakeSwap / Uniswap / aggregator).
+// Where "Buy ROBX" sends people (Uniswap on Robinhood Chain).
 // ⟵ PASTE THE REAL SWAP LINK HERE when the pool is live, e.g.
-//    https://pancakeswap.finance/swap?outputCurrency=<ROBX_TOKEN_ADDRESS>
-export const BUY_ROBX_URL = "https://pancakeswap.finance/swap";
+//    https://app.uniswap.org/swap?chain=robinhood&outputCurrency=<ROBX_TOKEN_ADDRESS>
+export const BUY_ROBX_URL = "https://app.uniswap.org/swap";
+
+// ─── Robinhood Chain mainnet (verified on-chain) ──────────────────────────
+export const ROBINHOOD_CHAIN = {
+  chainId: 4663,
+  chainIdHex: "0x1237", // 4663
+  chainName: "Robinhood Chain",
+  rpcUrls: ["https://rpc.mainnet.chain.robinhood.com"],
+  blockExplorerUrls: ["https://robinhoodchain.blockscout.com"],
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+} as const;
