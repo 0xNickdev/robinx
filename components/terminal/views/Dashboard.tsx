@@ -1,25 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { MARKS, TREASURY } from "@/lib/mock";
+import { TREASURY } from "@/lib/mock";
+import { PAYOUT_STOCKS, type StockSym } from "@/lib/stocks";
 import { BUY_ROBX_URL } from "@/lib/config";
 import { useQuotes, quotePrice } from "@/lib/useQuotes";
 import { fmtUSD, fmtNum, fmtPct, fmtUSDCompact } from "@/lib/format";
-import { AreaChart } from "@/components/AreaChart";
+import { CandleChart } from "@/components/CandleChart";
 import { Stat, ViewHeader, LiveFeedChip } from "../ui";
 import type { View } from "../TerminalShell";
 
 export function Dashboard({ go }: { go: (v: View) => void }) {
   const { wallet, robxBalance, claimUsdc, shareBps, positions } = useStore();
   const quotes = useQuotes();
-  const hoodPrice = quotePrice(quotes, "HOOD");
-  const hoodChg = quotes.HOOD?.changePct ?? 0;
+
+  const [market, setMarket] = useState<StockSym>("TSLA");
+  const marketStock = PAYOUT_STOCKS.find((s) => s.symbol === market)!;
+  const marketPrice = quotePrice(quotes, market);
+  const marketChg = quotes[market]?.changePct ?? 0;
 
   return (
     <div>
       <ViewHeader
         title="Dashboard"
-        subtitle="Your RobinX account at a glance — live Nasdaq prices."
+        subtitle="Your RobinX account at a glance — live reward markets."
         right={<LiveFeedChip />}
       />
 
@@ -45,16 +50,20 @@ export function Dashboard({ go }: { go: (v: View) => void }) {
         <Stat
           label="Treasury Claim"
           value={fmtUSD(claimUsdc)}
-          sub="Accrues after token launch"
+          sub="Paid in stocks · every 30 min"
           accent="long"
         />
         <Stat
-          label="HOOD Price"
-          value={fmtUSD(hoodPrice)}
+          label={`${market} Price`}
+          value={fmtUSD(marketPrice)}
           sub={
-            <span className={hoodChg >= 0 ? "text-long" : "text-short"}>
-              {fmtPct(hoodChg, 2)} today · live
-            </span>
+            quotes[market]?.live ? (
+              <span className={marketChg >= 0 ? "text-long" : "text-short"}>
+                {fmtPct(marketChg, 2)} today · live
+              </span>
+            ) : (
+              "On-chain priced"
+            )
           }
         />
         <Stat
@@ -66,22 +75,38 @@ export function Dashboard({ go }: { go: (v: View) => void }) {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="panel p-6 lg:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <div className="label">HOOD price</div>
-              <div className="num text-2xl font-semibold text-white">
-                {fmtUSD(hoodPrice)}
-                <span className={`ml-2 text-sm font-medium ${hoodChg >= 0 ? "text-long" : "text-short"}`}>
-                  {fmtPct(hoodChg, 2)} today
-                </span>
-              </div>
-            </div>
-            <LiveFeedChip />
+          {/* reward market picker */}
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {PAYOUT_STOCKS.map((s) => {
+              const price = quotePrice(quotes, s.symbol);
+              const active = market === s.symbol;
+              return (
+                <button
+                  key={s.symbol}
+                  onClick={() => setMarket(s.symbol)}
+                  className={`flex items-center gap-2 rounded-md border-2 px-3 py-2 font-mono transition-all ${
+                    active
+                      ? "border-robin/60 bg-robin/10"
+                      : "border-robin/15 bg-ink-900/60 hover:border-robin/35"
+                  }`}
+                >
+                  <span className={`text-sm font-black uppercase ${active ? "text-robin" : "text-zinc-300"}`}>
+                    {s.token}
+                  </span>
+                  <span className="num text-xs font-bold text-white">{fmtUSD(price)}</span>
+                </button>
+              );
+            })}
+            <span className="ml-auto hidden sm:block">
+              <LiveFeedChip label={quotes[market]?.live ? "Live · Nasdaq feed" : "On-chain priced"} />
+            </span>
           </div>
-          <AreaChart data={MARKS.map((m) => ({ x: m.date, y: m.price }))} />
-          <p className="mt-4 text-xs text-zinc-500">
-            Marks are official oracle prints — Nasdaq closes at earnings, index
-            events, and month-ends. This is not an intraday tick.
+
+          <CandleChart symbol={market} basePrice={marketPrice} height={300} />
+
+          <p className="mt-3 text-xs text-zinc-500">
+            {marketStock.name} — one of the tokenized stocks the treasury pays
+            out. Preview candles; live feed and perps arrive with Phase 02.
           </p>
         </div>
 

@@ -17,7 +17,7 @@ export function History({ go }: { go: (v: View) => void }) {
     <div>
       <ViewHeader
         title="Position History"
-        subtitle="Settled perps trades against published HOOD oracle marks."
+        subtitle="Settled perps trades against published oracle marks."
       />
 
       {history.length === 0 ? (
