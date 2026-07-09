@@ -23,22 +23,32 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RobinX — Synthetic HOOD Exposure on Robinhood Chain",
+  title: "RobinX — Hold the token. Get paid in stocks.",
   description:
-    "Gain synthetic exposure to Robinhood (HOOD) stock — 24/7, on-chain, no brokerage account. Hold the token, accrue a treasury claim, and speculate on the next oracle mark with on-chain perps. Built on Robinhood Chain.",
+    "Hold ROBX and earn rewards in real tokenized stocks — TSLA, NVDA or SPCX — paid out every 30 minutes. No brokerage account, 24/7, self-custody. Built on Robinhood Chain.",
   keywords: [
-    "Robinhood",
-    "HOOD",
-    "DeFi",
+    "RobinX",
+    "ROBX",
+    "tokenized stocks",
     "Robinhood Chain",
-    "synthetic asset",
+    "DeFi",
+    "TSLA",
+    "NVDA",
+    "SpaceX",
     "perpetuals",
     "treasury",
   ],
   openGraph: {
-    title: "RobinX",
-    description: "Synthetic Robinhood (HOOD) stock exposure on Robinhood Chain.",
+    title: "RobinX — Hold the token. Get paid in stocks.",
+    description:
+      "Earn real tokenized stocks (TSLA · NVDA · SPCX) every 30 minutes just by holding ROBX. On Robinhood Chain.",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RobinX — Hold the token. Get paid in stocks.",
+    description:
+      "Earn real tokenized stocks (TSLA · NVDA · SPCX) every 30 minutes just by holding ROBX. On Robinhood Chain.",
   },
 };
 
