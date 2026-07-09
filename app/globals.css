@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink-950 text-zinc-200 antialiased;
+  /* faint graph-paper grid — the seized-style zine backdrop */
+  background-image:
+    linear-gradient(rgba(217, 255, 77, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 255, 77, 0.035) 1px, transparent 1px),
+    radial-gradient(1100px 520px at 50% -10%, rgba(217, 255, 77, 0.06), transparent 60%);
+  background-size:
+    28px 28px,
+    28px 28px,
+    100% 100%;
+  background-attachment: fixed;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 255, 77, 0.22);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 255, 77, 0.4);
+}
+
+@layer components {
+  /* ---- Brutalist panels / cards ---- */
+  .panel {
+    @apply rounded-lg border-2 border-robin/25 bg-ink-850;
+    box-shadow: 4px 4px 0 0 rgba(217, 255, 77, 0.16);
+  }
+  .panel-hover {
+    @apply transition-all duration-150;
+  }
+  .panel-hover:hover {
+    @apply border-robin/55;
+    box-shadow: 6px 6px 0 0 rgba(217, 255, 77, 0.28);
+  }
+
+  /* ---- Mono section tag:  // 01 · LIVE MARKETS ---- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border-2 border-robin/35 bg-robin/5 px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-robin;
+  }
+
+  /* ---- Chunky brutalist buttons ---- */
+  .btn-robin {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-robin-600 bg-robin px-5 py-3 font-mono text-sm font-bold uppercase tracking-wide text-ink-950 transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none;
+    box-shadow: 4px 4px 0 0 #728F12;
+  }
+  .btn-robin:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 #728F12;
+  }
+  .btn-robin:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 0 #728F12;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-robin/60 bg-ink-850 px-5 py-3 font-mono text-sm font-bold uppercase tracking-wide text-robin transition-all duration-150;
+    box-shadow: 4px 4px 0 0 rgba(217, 255, 77, 0.6);
+  }
+  .btn-ghost:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 rgba(217, 255, 77, 0.6);
+    @apply text-robin-200;
+  }
+  .btn-ghost:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 0 rgba(217, 255, 77, 0.6);
+  }
+
+  /* ---- Mono uppercase meta label ---- */
+  .label {
+    @apply font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500;
+  }
+
+  /* ---- Heavy display heading ---- */
+  .display {
+    @apply font-black uppercase leading-[0.92] tracking-tight;
+  }
+
+  /* ---- Handwritten marker accent ---- */
+  .hand {
+    font-family: var(--font-hand);
+    @apply font-bold;
+  }
+
+  .grad-text {
+    @apply text-robin;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}

@@ -1,0 +1,21 @@
+# deps / build
+node_modules/
+/.next
+/out
+next-env.d.ts
+*.tsbuildinfo
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# env / secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+
+# misc
+.DS_Store
+.vercel

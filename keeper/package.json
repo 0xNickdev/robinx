@@ -1,0 +1,17 @@
+{
+  "name": "robinx-keeper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Triggers RewardDistributor.distribute() every 30 minutes and heals share desyncs.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}
