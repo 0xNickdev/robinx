@@ -9,7 +9,6 @@ import {
   useState,
 } from "react";
 import {
-  CURRENT_MARK,
   TREASURY,
   type ClosedPosition,
   type Direction,
@@ -58,6 +57,7 @@ type Store = {
     direction: Direction;
     leverage: number;
     marginUsdc: number;
+    entryPrice: number;
   }) => void;
   closePosition: (id: string) => void;
 };
@@ -237,9 +237,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const openPosition = useCallback(
-    (p: { direction: Direction; leverage: number; marginUsdc: number }) => {
+    (p: {
+      direction: Direction;
+      leverage: number;
+      marginUsdc: number;
+      entryPrice: number;
+    }) => {
       const sizeUsd = p.marginUsdc * p.leverage;
-      const entry = CURRENT_MARK.price;
+      const entry = p.entryPrice; // live oracle price from the caller
       // liquidation when loss ≈ margin: move of (1/leverage) against you
       const move = entry / p.leverage;
       const liq =
@@ -267,7 +272,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setPositions((list) => {
         const pos = list.find((p) => p.id === id);
         if (pos) {
-          const mark = CURRENT_MARK.price;
+          // real settlement price comes from the oracle at launch; the
+          // preview settles flat (entry == exit) so no fabricated PnL
+          const mark = pos.entryPrice;
           const dir = pos.direction === "long" ? 1 : -1;
           const pnl =
             ((mark - pos.entryPrice) / pos.entryPrice) * pos.sizeUsd * dir;

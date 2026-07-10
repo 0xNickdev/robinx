@@ -1,31 +1,6 @@
-// Static, deterministic mock data for the RobinX terminal.
-// HOOD trades on Nasdaq — these "marks" emulate the official settlement prints
-// an oracle would publish on-chain (closing prices at earnings, index events,
-// and month-ends), not intraday ticks.
-
-export type Mark = {
-  date: string; // ISO
-  price: number; // HOOD $/share at the mark
-  capBn: number; // implied market cap in $B
-  source: string;
-  note?: string;
-};
-
-// Each mark is an official oracle print (closes at key events).
-export const MARKS: Mark[] = [
-  { date: "2021-07-29", price: 34.82, capBn: 29, source: "IPO close" },
-  { date: "2021-08-04", price: 70.39, capBn: 59, source: "Meme rally close", note: "All-time high week" },
-  { date: "2022-06-16", price: 7.0, capBn: 6, source: "Monthly close", note: "Bear-market low" },
-  { date: "2023-08-04", price: 10.5, capBn: 9.5, source: "Earnings close" },
-  { date: "2024-01-12", price: 12.0, capBn: 10.5, source: "Monthly close" },
-  { date: "2024-06-21", price: 22.4, capBn: 19.8, source: "Earnings close" },
-  { date: "2024-12-13", price: 39.6, capBn: 35, source: "Monthly close" },
-  { date: "2025-06-13", price: 74.5, capBn: 66, source: "Monthly close" },
-  { date: "2025-09-22", price: 118.0, capBn: 105, source: "S&P 500 inclusion" },
-];
-
-export const CURRENT_MARK = MARKS[MARKS.length - 1];
-export const PREV_MARK = MARKS[MARKS.length - 2];
+// Protocol configuration & shared types for the RobinX terminal.
+// No mock market data — live prices come from /api/prices, balances from the
+// connected wallet, and positions from the chain once perps go live.
 
 // Feature flags — what's live vs. on the roadmap (see landing Roadmap section)
 export const FEATURES = {
@@ -34,17 +9,17 @@ export const FEATURES = {
   autoTradingLive: false, // Phase 03 — strategy vaults / auto-trading
 };
 
-// Treasury + token economics
+// Token economics (design constants). Live figures (treasury size, APR, spot
+// price) stay 0 → the UI shows "TBA" until the token launches and real data
+// is wired in.
 export const TREASURY = {
-  totalUsdc: 0, // real figure appears after launch — UI shows "TBA" while 0
-  taxRateBps: 400, // 4% buy/sell tax → treasury (tokenomics design)
-  tokenPriceUsd: 0, // set by the market at launch — UI shows "TBA" while 0
+  totalUsdc: 0,
+  taxRateBps: 400, // 4% buy/sell tax → treasury
+  tokenPriceUsd: 0,
   tokenSymbol: "ROBX",
   totalSupply: 100_000_000,
-  apr: 0, // realized treasury growth — "TBA" until there is history
+  apr: 0,
 };
-
-// No simulated account — balances come from the connected wallet.
 
 export type Direction = "long" | "short";
 
@@ -59,7 +34,7 @@ export type Position = {
   openedAt: string;
 };
 
-// Empty while perps are in preview (Phase 02) — populated once trading is live.
+// Positions come from the chain once perps are live (Phase 02).
 export const OPEN_POSITIONS: Position[] = [];
 
 export type ClosedPosition = {
@@ -73,12 +48,12 @@ export type ClosedPosition = {
   settledAt: string;
 };
 
-// Empty while perps are in preview (Phase 02).
 export const CLOSED_POSITIONS: ClosedPosition[] = [];
 
+// Robinhood Chain mainnet (verified on-chain).
 export const NETWORK = {
   name: "Robinhood Chain",
-  chainId: 999,
-  symbol: "ROBIN",
-  explorer: "https://scan.robinhoodchain.io",
+  chainId: 4663,
+  symbol: "ETH",
+  explorer: "https://robinhoodchain.blockscout.com",
 };

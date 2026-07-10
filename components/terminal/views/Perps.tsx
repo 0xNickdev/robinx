@@ -62,7 +62,7 @@ export function Perps() {
     setPending(true);
     push("Confirm position in wallet…", "pending");
     setTimeout(() => {
-      openPosition({ direction: dir, leverage: lev, marginUsdc: numMargin });
+      openPosition({ direction: dir, leverage: lev, marginUsdc: numMargin, entryPrice: entry });
       push(`Opened ${lev}× ${dir.toUpperCase()} · ${fmtUSD(size)}`, "success");
       setMargin("");
       setPending(false);
