@@ -92,7 +92,7 @@ const UP = "#2FE08C";
 const DOWN = "#FF6B8A";
 
 export function CandleChart({
-  symbol = "HOOD",
+  symbol = "TSLA",
   basePrice,
   height = 320,
 }: {
