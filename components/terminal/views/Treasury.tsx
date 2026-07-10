@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
-import { MARKS, TREASURY } from "@/lib/mock";
+import { TREASURY } from "@/lib/mock";
 import { PAYOUT_STOCKS, DISTRIBUTION_MINUTES, type StockSym } from "@/lib/stocks";
 import { useQuotes, quotePrice } from "@/lib/useQuotes";
-import { fmtUSD, fmtNum, fmtUSDCompact, fmtDate, fmtPct } from "@/lib/format";
-import { AreaChart } from "@/components/AreaChart";
+import { fmtUSD, fmtNum, fmtUSDCompact } from "@/lib/format";
+import { CandleChart } from "@/components/CandleChart";
 import { Stat, ViewHeader, LiveFeedChip } from "../ui";
 import { useToast } from "../Toast";
 
@@ -71,44 +71,37 @@ export function Treasury() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="panel p-6 lg:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
-            <span className="label">Treasury value vs. price marks</span>
-            <span className="chip">{MARKS.length} marks</span>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {PAYOUT_STOCKS.map((st) => {
+              const active = payout === st.symbol;
+              return (
+                <button
+                  key={st.symbol}
+                  onClick={() => setPayout(st.symbol)}
+                  className={`flex items-center gap-2 rounded-md border-2 px-3 py-2 font-mono transition-all ${
+                    active
+                      ? "border-robin/60 bg-robin/10"
+                      : "border-robin/15 bg-ink-900/60 hover:border-robin/35"
+                  }`}
+                >
+                  <span className={`text-sm font-black uppercase ${active ? "text-robin" : "text-zinc-300"}`}>
+                    {st.token}
+                  </span>
+                  <span className="num text-xs font-bold text-white">
+                    {fmtUSD(quotePrice(quotes, st.symbol))}
+                  </span>
+                </button>
+              );
+            })}
+            <span className="ml-auto hidden sm:block">
+              <LiveFeedChip label={quotes[payout]?.live ? "Live · Nasdaq feed" : "On-chain priced"} />
+            </span>
           </div>
-          <AreaChart
-            data={MARKS.map((m) => ({ x: m.date, y: m.price }))}
-            stroke="#2FE08C"
-          />
-          <div className="mt-5 overflow-hidden rounded-xl border border-robin/10">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-ink-900/60 text-left text-zinc-500">
-                  <th className="px-4 py-2.5 font-medium">Date</th>
-                  <th className="px-4 py-2.5 font-medium">Price</th>
-                  <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Mkt cap</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Change</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-robin/5">
-                {MARKS.slice().reverse().map((m, i, arr) => {
-                  const prev = arr[i + 1];
-                  const chg = prev
-                    ? ((m.price - prev.price) / prev.price) * 100
-                    : 0;
-                  return (
-                    <tr key={m.date} className="hover:bg-robin/5">
-                      <td className="px-4 py-3 text-zinc-300">{fmtDate(m.date)}</td>
-                      <td className="num px-4 py-3 font-medium text-white">${m.price.toFixed(2)}</td>
-                      <td className="num hidden px-4 py-3 text-zinc-400 sm:table-cell">${m.capBn}B</td>
-                      <td className={`num px-4 py-3 text-right font-medium ${chg >= 0 ? "text-long" : "text-short"}`}>
-                        {prev ? fmtPct(chg, 1) : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <CandleChart symbol={payout} basePrice={payoutPrice} height={300} />
+          <p className="mt-3 text-xs text-zinc-500">
+            {payoutStock.name} — the stock you&apos;ve chosen to receive. Preview
+            candles; live feed arrives with Phase 02.
+          </p>
         </div>
 
         <div className="panel flex flex-col p-6">

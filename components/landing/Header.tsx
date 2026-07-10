@@ -9,8 +9,8 @@ const NAV = [
   { label: "Mission", href: "#mission" },
   { label: "Mechanics", href: "#mechanics" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Treasury", href: "#stats" },
   { label: "FAQ", href: "#faq" },
+  { label: "Docs", href: "/docs" },
 ];
 
 const X_URL = "https://x.com/RobinX_HL";

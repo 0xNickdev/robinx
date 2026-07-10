@@ -378,8 +378,8 @@ export function Footer() {
         <div className="max-w-xs">
           <Wordmark />
           <p className="mt-4 text-sm leading-relaxed text-zinc-500">
-            Synthetic Robinhood (HOOD) price exposure on Robinhood Chain. Not
-            affiliated with Robinhood Markets, Inc.
+            Hold ROBX, get paid in real tokenized stocks every 30 minutes. Not
+            affiliated with the underlying companies.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
@@ -404,8 +404,7 @@ export function Footer() {
             title="Community"
             links={[
               ["X / Twitter", "https://x.com/RobinX_HL"],
-              ["Docs", "#"],
-              ["Robinhood Chain", NETWORK.explorer],
+              ["Docs", "/docs"],
             ]}
           />
         </div>
