@@ -44,15 +44,15 @@ export const TICKER_SYMBOLS = [
   "TSLA",
   "NVDA",
   "SPCX",
-  "HOOD",
   "AAPL",
+  "META",
   "GME",
   "PLTR",
   "COIN",
 ];
 
 export const SEED_PRICES: Record<string, number> = {
-  HOOD: 116.0,
+  META: 720.0,
   TSLA: 399.5,
   SPCX: 250.0,
   NVDA: 196.8,

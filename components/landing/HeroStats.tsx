@@ -1,20 +1,13 @@
 "use client";
 
-import { useQuotes, quotePrice } from "@/lib/useQuotes";
-import { fmtUSD, fmtPct } from "@/lib/format";
-
-// Hero stat strip — real HOOD quote plus tokenomics design constants.
-// No invented metrics: anything unknown pre-launch simply isn't shown here.
+// Hero stat strip — product facts, no HOOD. Live prices live in the ticker
+// below; these are the tokenomics constants that sell the mechanic.
 export function HeroStats() {
-  const quotes = useQuotes();
-  const hood = quotePrice(quotes, "HOOD");
-  const chg = quotes.HOOD?.changePct ?? 0;
-
   const stats = [
-    { value: fmtUSD(hood), label: "HOOD Price · Live" },
-    { value: fmtPct(chg, 2), label: "Today" },
-    { value: "4%", label: "Trade Tax" },
+    { value: "TSLA · NVDA · SPCX", label: "Reward Stocks" },
     { value: "30 min", label: "Payout Cycle" },
+    { value: "4%", label: "Trade Tax" },
+    { value: "100M", label: "Supply" },
     { value: "Robinhood Chain", label: "Network" },
   ];
 
@@ -31,7 +24,7 @@ export function HeroStats() {
               i % 2 === 1 ? "border-l-2 border-robin/15 sm:border-l-2" : ""
             }`}
           >
-            <div className="num text-xl font-black text-robin sm:text-2xl">
+            <div className="num text-base font-black text-robin sm:text-lg">
               {s.value}
             </div>
             <div className="label mt-1">{s.label}</div>
@@ -47,7 +40,7 @@ export function HeroStats() {
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-long opacity-70" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-long" />
         </span>
-        Live Nasdaq feed · refreshes every 60s
+        Live prices below · refreshes every 60s
       </div>
     </>
   );

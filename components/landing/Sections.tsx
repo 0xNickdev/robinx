@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { LogoMark, Wordmark } from "@/components/Logo";
-import { AreaChart } from "@/components/AreaChart";
-import { MARKS, TREASURY, NETWORK } from "@/lib/mock";
-import { fmtPct } from "@/lib/format";
+import { TREASURY, NETWORK } from "@/lib/mock";
 import { HandLoop, Underline, Star, Sparkle } from "@/components/Doodles";
 
 function SectionTag({ n, children }: { n: string; children: React.ReactNode }) {
@@ -21,25 +19,25 @@ export function About() {
         <div>
           <SectionTag n="01">About</SectionTag>
           <h2 className="display text-balance text-4xl text-white sm:text-5xl">
-            The stock that armed the{" "}
+            Get paid in{" "}
             <span className="relative inline-block">
               <span className="hand normal-case text-robin [text-transform:none]">
-                retail crowd
+                real stocks
               </span>
               <Underline className="absolute -bottom-2 left-0 h-3 w-full" />
             </span>
-            , finally on-chain.
+            , just for holding.
           </h2>
           <p className="mt-6 text-pretty leading-relaxed text-zinc-400">
-            Robinhood (HOOD) trades on Nasdaq — but only through brokers, inside
-            market hours, behind borders. RobinX mirrors its official price
-            marks on-chain with a synthetic token, so anyone can hold the
-            trajectory 24/7 without an account, a border check, or market hours.
+            Stocks used to be gated behind brokers, borders, and market hours.
+            Robinhood put real equities on-chain — RobinX turns them into a
+            reward. Hold ROBX and the treasury pays you tokenized Tesla, NVIDIA
+            or SpaceX every 30 minutes, straight to your wallet.
           </p>
           <p className="mt-4 text-pretty leading-relaxed text-zinc-400">
-            The token itself doesn&apos;t grant equity. It tracks the price, feeds
-            a treasury that pays rewards in real tokenized stocks every 30
-            minutes, and unlocks a speculative perps layer on top.
+            The token itself grants no equity. A 4% trade tax feeds the treasury,
+            which distributes real tokenized stocks pro-rata to holders — no
+            emissions, no inflation — and unlocks a speculative perps layer on top.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             {["No brokerage account", "24/7 markets", "Self-custody", "Robinhood Chain native"].map(
@@ -54,26 +52,24 @@ export function About() {
 
         <div className="panel p-6">
           <div className="mb-4 flex items-center justify-between">
-            <span className="label">HOOD price marks</span>
-            <span className="chip">2021 → 2025 · Nasdaq closes</span>
+            <span className="label">What you earn</span>
+            <span className="chip">Every 30 min</span>
           </div>
-          <AreaChart
-            data={MARKS.map((m) => ({ x: m.date, y: m.price }))}
-          />
-          <div className="mt-4 flex items-center justify-between border-t-2 border-robin/15 pt-4 font-mono text-sm">
-            <span className="num text-zinc-500">${MARKS[0].price.toFixed(2)}</span>
-            <span className="num font-bold text-robin">
-              {fmtPct(
-                ((MARKS[MARKS.length - 1].price - MARKS[0].price) /
-                  MARKS[0].price) *
-                  100,
-                0,
-              )}{" "}
-              all-time
-            </span>
-            <span className="num text-white">
-              ${MARKS[MARKS.length - 1].price.toFixed(2)}
-            </span>
+          <ul className="divide-y-2 divide-robin/10">
+            {[
+              ["tTSLA", "Tesla"],
+              ["tNVDA", "NVIDIA"],
+              ["tSPCX", "SpaceX · private, on-chain only"],
+            ].map(([token, name]) => (
+              <li key={token} className="flex items-center justify-between py-4">
+                <span className="font-mono text-lg font-black text-robin">{token}</span>
+                <span className="text-sm text-zinc-400">{name}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-2 border-t-2 border-robin/15 pt-4 font-mono text-sm text-zinc-400">
+            Hold ROBX → the treasury pays you these real tokenized stocks,
+            pro-rata, straight to your wallet. Your pick.
           </div>
         </div>
       </div>
@@ -279,12 +275,12 @@ export function Stats() {
 export function FAQ() {
   const faqs = [
     {
-      q: "Do I own real HOOD shares?",
-      a: "No. RobinX is a synthetic instrument that tracks Robinhood's (HOOD) published price marks. It confers no equity, dividends, voting, or shareholder rights of any kind. Not affiliated with Robinhood Markets, Inc.",
+      q: "Do I own real shares?",
+      a: "The rewards are real tokenized stocks (tTSLA, tNVDA, tSPCX) — 1:1-backed stock tokens on Robinhood Chain, held in your own wallet. ROBX itself is a utility token and confers no equity or shareholder rights. Not affiliated with the underlying companies.",
     },
     {
       q: "Where does the price data come from?",
-      a: "HOOD trades on Nasdaq. An oracle publishes official settlement marks on-chain — closing prices at earnings, index events, and month-ends — so the UI always shows a clear 'last updated' timestamp rather than intraday ticks.",
+      a: "The reward stocks trade on Nasdaq (SpaceX is priced on-chain). We show live quotes in the app, and perps settle against official oracle marks published on-chain.",
     },
     {
       q: "How do I receive real stocks?",
@@ -296,7 +292,7 @@ export function FAQ() {
     },
     {
       q: "What are the perps?",
-      a: "A perpetual-futures market on the next HOOD oracle mark. You post your treasury claim as margin, pick long or short with leverage, and settle against the next published mark. Liquidation applies if the mark moves far enough against you.",
+      a: "A perpetual-futures market on the reward stocks (TSLA, NVDA, SPCX). You post your treasury claim as margin, pick long or short with leverage, and settle against the next published oracle mark. Liquidation applies if the mark moves far enough against you.",
     },
     {
       q: "What chain is this on?",
