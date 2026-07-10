@@ -1,49 +1,77 @@
-# RobinX Keeper
+# RobinX Keeper (Railway server)
 
-A tiny worker that keeps the treasury running:
+The server-side of RobinX. One always-on Node service that:
 
-1. **Every 30 minutes** calls `RewardDistributor.distribute()` — swaps the
-   accumulated ROBX tax into USDG and credits holders.
-2. **Continuously** watches ROBX transfers and calls `syncShare()` on any
-   account whose ledger share drifts from its true balance (AUDIT M-1 fix).
+1. **Distributes rewards** — calls `RewardDistributor.distribute()` every 30
+   minutes (swaps the collected ROBX tax into USDG and credits holders).
+2. **Heals share desyncs** — watches ROBX transfers and calls `syncShare()` on
+   any account whose ledger share drifts from its true balance (AUDIT M-1).
+3. **Serves health/status** — HTTP endpoints for Railway monitoring and for the
+   frontend to read real treasury numbers.
 
 It holds **no privileges** — the keeper wallet only pays gas to call public
-functions. Worst case if it goes down: distributions pause until it restarts
-(or anyone else calls `distribute()`), nothing is lost.
+functions. If it goes down, distributions pause until it restarts (or anyone
+calls `distribute()`); nothing is ever lost.
+
+## Layout
+
+```
+keeper/
+  index.js          # entry: boots chain, server, loops
+  src/
+    config.js       # env parsing + validation
+    chain.js        # provider, wallet, contracts (reads ROBX/USDG from distributor)
+    keeper.js       # distribute loop + syncShare sweep
+    server.js       # /health + /status HTTP
+    log.js
+  railway.json      # Railway build/deploy + healthcheck
+  .env.example
+```
 
 ## Env vars
 
-| Var | Required | Default | What |
+| Var | Required | Default | Notes |
 | --- | --- | --- | --- |
-| `DISTRIBUTOR` | ✅ | — | RewardDistributor address |
-| `KEEPER_PRIVATE_KEY` | ✅ | — | Keeper wallet key (fund with ~0.01 ETH) |
-| `ROBX` | recommended | — | ROBX token address (enables the syncShare sweep) |
-| `RPC_URL` | — | Robinhood Chain mainnet | RPC endpoint |
-| `CHECK_INTERVAL_MS` | — | `60000` | Poll cadence |
+| `DISTRIBUTOR` | ✅ | — | RewardDistributor address (ROBX & USDG are read from it) |
+| `KEEPER_PRIVATE_KEY` | ✅ | — | Keeper wallet key — fund with ~0.01 ETH |
+| `RPC_URL` | — | Robinhood Chain mainnet | |
+| `CHECK_INTERVAL_MS` | — | `60000` | distribute poll cadence |
+| `SWEEP_INTERVAL_MS` | — | `300000` | syncShare sweep cadence |
+| `MIN_GAS_WARN` | — | `0.002` | warn when keeper gas dips below this |
+| `PORT` | — | Railway-provided | HTTP port |
+
+## HTTP endpoints
+
+- `GET /health` → `{ ok: true }` — Railway healthcheck.
+- `GET /status` → live JSON: keeper gas, treasury USDG balance, pending tax,
+  total distributed, epoch count, `secondsUntilNext`, `canDistributeNow`,
+  chainId. CORS-open so the Vercel frontend can fetch it for the real
+  "next payout" countdown and treasury stats.
 
 ## Run locally
 
 ```bash
 cd keeper
 npm install
-DISTRIBUTOR=0x... ROBX=0x... KEEPER_PRIVATE_KEY=0x... npm start
+cp .env.example .env   # fill DISTRIBUTOR + KEEPER_PRIVATE_KEY
+npm start
 ```
 
 ## Deploy on Railway
 
-1. New Project → Deploy from GitHub repo → pick this repo, root dir `keeper/`.
-2. Railway auto-detects Node and runs `npm start`.
-3. Variables tab → add `DISTRIBUTOR`, `ROBX`, `KEEPER_PRIVATE_KEY`
-   (and optionally `RPC_URL`).
-4. Fund the keeper wallet with ~0.01 ETH on Robinhood Chain.
+1. **New Project → Deploy from GitHub repo** → pick this repo.
+2. Settings → **Root Directory** = `keeper`.
+3. Variables → add `DISTRIBUTOR`, `KEEPER_PRIVATE_KEY` (+ optional overrides).
+4. Railway reads `railway.json`: builds with Nixpacks, runs `npm start`,
+   health-checks `/health`, restarts on failure.
+5. Fund the keeper wallet with ~0.01 ETH on Robinhood Chain.
 
-Keep it as a **Service** (always-on), not a Cron job — it needs the live event
-subscription for the syncShare sweep. Gas per run is a few cents; ~0.01 ETH
-lasts a long time.
+Keep it a **Service** (always-on), not a Cron — it needs the live event
+subscription for the syncShare sweep and to serve `/status`.
 
-## Optional: Chainlink Automation instead
+## Wiring the frontend to /status (optional)
 
-If Chainlink Automation is available on Robinhood Chain, register the
-distributor as a custom-logic upkeep (`checkUpkeep`/`performUpkeep` are already
-implemented) and you can skip this bot for distribution — though the syncShare
-sweep still benefits from running it.
+Once deployed, point the app at the keeper URL to show real treasury data:
+set `NEXT_PUBLIC_KEEPER_URL=https://<your-service>.up.railway.app` in Vercel
+and the Treasury tab can read live `secondsUntilNext`, `usdgBalance`, and
+`totalDistributed` instead of placeholders.
