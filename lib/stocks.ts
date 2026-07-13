@@ -35,7 +35,7 @@ export const PAYOUT_STOCKS: PayoutStock[] = [
     name: "SpaceX",
     token: "tSPCX",
     address: "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa",
-    seedPrice: 250.0, // private company — no Nasdaq feed, priced on-chain
+    seedPrice: 458.0, // private company — no Nasdaq feed, priced on-chain
   },
 ];
 
@@ -54,7 +54,7 @@ export const TICKER_SYMBOLS = [
 export const SEED_PRICES: Record<string, number> = {
   META: 720.0,
   TSLA: 399.5,
-  SPCX: 250.0,
+  SPCX: 458.0,
   NVDA: 196.8,
   AAPL: 305.6,
   GME: 22.9,

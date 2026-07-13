@@ -10,14 +10,22 @@ export const dynamic = "force-dynamic";
 
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; RobinX/1.0)" };
 
-// Tokenized private companies (no Nasdaq listing) — seed/on-chain price only,
-// never resolved via Yahoo/Stooq to avoid stale same-ticker ETFs.
-const OFFCHAIN_ONLY = new Set(["SPCX"]);
+// Some reward symbols map to a different Yahoo ticker. SpaceX is private, so
+// its tokenized price trades as a "crypto" pair (SPACEX-USD) rather than a
+// Nasdaq listing — Yahoo still has a live quote for it.
+const YAHOO_TICKER: Record<string, string> = {
+  SPCX: "SPACEX-USD",
+};
+
+// Symbols that only exist as a token/crypto quote — use Yahoo, skip Stooq
+// (which only covers listed equities).
+const YAHOO_ONLY = new Set(["SPCX"]);
 
 async function fromYahoo(symbol: string): Promise<Quote | null> {
   try {
+    const ticker = YAHOO_TICKER[symbol] ?? symbol;
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`,
+      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1d&interval=1d`,
       { headers: UA, next: { revalidate: 30 } },
     );
     if (!res.ok) return null;
@@ -60,7 +68,7 @@ function seed(symbol: string): Quote {
 export async function GET() {
   const quotes = await Promise.all(
     TICKER_SYMBOLS.map(async (s) => {
-      if (OFFCHAIN_ONLY.has(s)) return seed(s);
+      if (YAHOO_ONLY.has(s)) return (await fromYahoo(s)) ?? seed(s);
       return (await fromYahoo(s)) ?? (await fromStooq(s)) ?? seed(s);
     }),
   );
