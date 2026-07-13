@@ -163,8 +163,10 @@ export default function DocsPage() {
               <p className="rounded-lg border-2 border-robin/20 bg-robin/5 p-4 text-sm text-zinc-300">
                 <b className="text-robin">Under the hood:</b> rewards are
                 accounted internally in USDG (a stablecoin) so your claimable
-                value is stable and the swap into a stock is a single hop. You
-                never receive USDG — payouts are strictly stocks.
+                value is stable and the swap into a stock is a single hop. USDG
+                is just the unit of account — you receive stocks, not USDG
+                (a USDG fallback only kicks in if a stock&apos;s pool is ever
+                unavailable).
               </p>
             </Section>
 
