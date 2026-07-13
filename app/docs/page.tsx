@@ -273,13 +273,6 @@ export default function DocsPage() {
                   <span>tSPCX <Addr>{SPCX}</Addr></span>
                 </div>
               </div>
-              <p className="rounded-lg border-2 border-warn/30 bg-warn/5 p-4 text-sm text-zinc-300">
-                <b className="text-warn">Security:</b> contracts ship with a
-                30-test suite and an internal review; an independent external
-                audit is required before mainnet liquidity, and ownership moves
-                to a multisig + timelock. The ROBX contract address and buy link
-                will be published here at launch.
-              </p>
             </Section>
 
             <Section id="faq" n="09" title="FAQ">
