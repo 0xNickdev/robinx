@@ -207,7 +207,7 @@ export default function DocsPage() {
                 {[
                   ["tTSLA", "Tesla", "The most-traded retail stock on Earth — cult following, huge volatility."],
                   ["tNVDA", "NVIDIA", "The AI trade itself — the most-watched company on the planet."],
-                  ["tSPCX", "SpaceX", "A private company you cannot buy on any exchange — tokenized only on Robinhood Chain."],
+                  ["tSPCX", "SpaceX", "The biggest IPO in history (June 2026) — Elon\u2019s rocket company, freshly public and one of the most hyped tickers on the market."],
                 ].map(([tok, name, why]) => (
                   <div key={tok} className="panel p-5">
                     <div className="font-mono text-lg font-black text-robin">{tok}</div>
@@ -218,8 +218,7 @@ export default function DocsPage() {
               </div>
               <p className="text-sm text-zinc-400">
                 All three are canonical Robinhood Stock Tokens, verified live on
-                Robinhood Chain mainnet. SpaceX (tSPCX) is private, so it&apos;s
-                priced on-chain rather than from a Nasdaq feed.
+                Robinhood Chain mainnet, tracking their Nasdaq-listed shares.
               </p>
             </Section>
 

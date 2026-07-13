@@ -59,7 +59,7 @@ export function About() {
             {[
               ["tTSLA", "Tesla"],
               ["tNVDA", "NVIDIA"],
-              ["tSPCX", "SpaceX · private, on-chain only"],
+              ["tSPCX", "SpaceX · biggest IPO in history"],
             ].map(([token, name]) => (
               <li key={token} className="flex items-center justify-between py-4">
                 <span className="font-mono text-lg font-black text-robin">{token}</span>

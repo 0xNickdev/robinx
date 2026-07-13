@@ -61,9 +61,9 @@ No emissions. No inflation. Rewards are funded purely by trading volume.
 | ----- | ---------------------- |
 | **TSLA** — Tesla | The most-traded retail stock on Earth. Cult following, monster volatility — exactly what a perps layer wants, and the stock every normie already understands. |
 | **NVDA** — NVIDIA | The AI trade itself. The most-watched company on the planet, institutional and retail flow in one ticker. |
-| **SPCX** — SpaceX | A **private company you cannot buy on any stock exchange** — tokenized only on Robinhood Chain. Holding SpaceX exposure as a farming reward is the single strongest hook in the product. |
+| **SPCX** — SpaceX | **The biggest IPO in history** (June 2026, ~$2.1T — bigger than Tesla). Elon’s rocket company, freshly public and one of the most hyped tickers on the market. Earning it as a farming reward is the single strongest hook in the product. |
 
-One quiver: **the cult, the AI king, the unreachable rocket.**
+One quiver: **the cult, the AI king, the record-breaking rocket.**
 
 All three are canonical Robinhood Stock Tokens, live on Robinhood Chain
 mainnet (verified on-chain).
@@ -82,8 +82,8 @@ mainnet (verified on-chain).
   equities on-chain stopped being theory — RobinX is first to gamify the rail.
 - **HOOD joined the S&P 500** and retail is back. The audience for
   "stocks, but crypto-speed" has never been bigger.
-- **SpaceX on-chain.** SPCX is exposure you literally can't get through any
-  broker — content writes itself.
+- **SpaceX just IPO'd.** The biggest IPO in history (June 2026) — SPCX is the
+  hottest ticker on the market, and RobinX pays it out as a reward.
 
 ## 🔗 Links
 
