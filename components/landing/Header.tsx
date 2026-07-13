@@ -13,7 +13,7 @@ const NAV = [
   { label: "Docs", href: "/docs" },
 ];
 
-const X_URL = "https://x.com/RobinX_HL";
+const X_URL = "https://x.com/robinxtech";
 
 function XIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (

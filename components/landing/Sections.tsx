@@ -403,7 +403,7 @@ export function Footer() {
           <FooterCol
             title="Community"
             links={[
-              ["X / Twitter", "https://x.com/RobinX_HL"],
+              ["X / Twitter", "https://x.com/robinxtech"],
               ["Docs", "/docs"],
             ]}
           />

@@ -91,7 +91,7 @@ mainnet (verified on-chain).
 | --- | --- |
 | Website | *TBA — drop at launch* |
 | Terminal | `/terminal` — live now (Nasdaq feed, perps preview) |
-| X / Twitter | https://x.com/RobinX_HL |
+| X / Twitter | https://x.com/robinxtech |
 | Contract (CA) | *TBA at launch* |
 | Buy | *DEX link TBA at launch* |
 | Chain | Robinhood Chain |
