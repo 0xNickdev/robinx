@@ -32,13 +32,13 @@ export function Trade() {
       const gross = numAmount * price;
       const tax = gross * taxRate;
       const net = gross - tax;
-      return { tax, net, tokens: net, outLabel: "USDC received" };
+      return { tax, net, tokens: net, outLabel: "USDG received" };
     }
   }, [numAmount, side, taxRate, price]);
 
   const max = side === "buy" ? walletUsdc : robxBalance;
   const overBalance = numAmount > max + 1e-9;
-  const unit = side === "buy" ? "USDC" : TREASURY.tokenSymbol;
+  const unit = side === "buy" ? "USDG" : TREASURY.tokenSymbol;
 
   const submit = () => {
     if (!FEATURES.tradeLive) return; // unlocks with the token launch
@@ -159,7 +159,7 @@ export function Trade() {
               {fmtNum(calc.tokens)}
             </span>
             <span className="shrink-0 rounded-lg bg-white/5 px-3 py-1.5 text-sm font-semibold text-zinc-300">
-              {side === "buy" ? TREASURY.tokenSymbol : "USDC"}
+              {side === "buy" ? TREASURY.tokenSymbol : "USDG"}
             </span>
           </div>
         </div>

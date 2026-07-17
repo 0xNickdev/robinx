@@ -176,7 +176,7 @@ export function Perps() {
                 className="num w-full bg-transparent text-2xl font-semibold text-white outline-none placeholder:text-zinc-600"
               />
               <span className="shrink-0 rounded-lg bg-robin/10 px-3 py-1.5 text-sm font-semibold text-robin">
-                USDC
+                USDG
               </span>
             </div>
             {overBalance && (
